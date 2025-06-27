@@ -1,4 +1,4 @@
-//API for register user
+    //API for register user
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import userModel from '../models/userModel.js'
@@ -59,4 +59,15 @@ const loginUser = async (req, res) => {
         res.json({success:false,message:error.message})
     }
 }
-export {registerUser,loginUser}
+//API for user profile
+const getUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.body
+        const userData = await userModel.findById(userId).select("-password")
+        res.json({ success: true, userData })
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+export {registerUser,loginUser , getUserProfile}

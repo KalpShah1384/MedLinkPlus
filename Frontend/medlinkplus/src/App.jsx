@@ -12,6 +12,7 @@ import Profile from './Profile/Profile';
 import UserAppoint from './Myappoint/UserAppoint';
 
 import { ToastContainer, toast } from "react-toastify";
+import Login from './components/Login';
 
 
 
@@ -23,6 +24,7 @@ function App() {
       <ToastContainer/>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path='/login' element={<Login/>}/>
         <Route path="/about" element={<About />} />
         <Route path="/Signup" element={<Signup />} />
         <Route path="/contact" element={<Contactus />} />

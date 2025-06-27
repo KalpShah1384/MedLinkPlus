@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Foot from "../../public/foot.svg";
 //import phone from "../../public/phone.png";
-import email from "../../public/email.png";
-import location from "../../public/location.png";
-import { useNavigate } from "react-router-dom";
+//import email from "../../public/email.png";
+//import location from "../../public/location.png";
 //import { FaArrowUp } from "react-icons/fa";
 //import dropdown from "../../public/dropdown_icon.svg";
 function Footer() {
@@ -20,10 +19,8 @@ function Footer() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const navigate = useNavigate();
 
   return (
-
     <div>
       {/* Main Footer Section */}
       <footer className="footer sm:footer-horizontal bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-10 flex flex-wrap justify-between">
@@ -86,24 +83,18 @@ function Footer() {
         </aside>
         <nav className="min-w-[150px] mb-6 sm:mb-0">
           <h6 className="text-[#d9d9d9] font-bold text-lg mb-3">Services</h6>
-          <a className="link link-hover block text-sm mb-1">
-            Role-based modules{" "}
-          </a>
-          <a className="link link-hover block text-sm mb-1">Consultancy</a>
-          <a className="link link-hover block text-sm mb-1">
-            Online medicine ordering
-          </a>
-          <a className="link link-hover block text-sm mb-1">
-            Digital record management
-          </a>
+          <a className="link link-hover block text-sm mb-1">Branding</a>
+          <a className="link link-hover block text-sm mb-1">Design</a>
+          <a className="link link-hover block text-sm mb-1">Marketing</a>
+          <a className="link link-hover block text-sm mb-1">Advertisement</a>
         </nav>
 
         <nav className="min-w-[150px] mb-6 sm:mb-0">
           <h6 className="text-[#d9d9d9] font-bold text-lg mb-3">Company</h6>
-          <a className="link link-hover block text-sm mb-1 " onClick={()=>navigate("/about")}>About us</a>
-          <a className="link link-hover block text-sm mb-1" onClick={()=>navigate("/contact")}>Contact</a>
-          <a className="link link-hover block text-sm mb-1">LinkedIn</a>
-          <a className="link link-hover block text-sm mb-1">X(Twitter)</a>
+          <a className="link link-hover block text-sm mb-1">About us</a>
+          <a className="link link-hover block text-sm mb-1">Contact</a>
+          <a className="link link-hover block text-sm mb-1">Jobs</a>
+          <a className="link link-hover block text-sm mb-1">Press kit</a>
         </nav>
 
         <nav className="min-w-[150px] mb-6 sm:mb-0">

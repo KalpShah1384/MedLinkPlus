@@ -1,8 +1,10 @@
 import React from "react";
 import Bodybanner from "../../public/Bodybanner.png";
 import Login from "./Login";
+import { useNavigate } from "react-router-dom";
 
 function Body() {
+  const navigate = useNavigate();
   return (
     <>
       <div className="max w-screen-2xl container mx-auto md:px-20 px-4 flex flex-col md:flex-row my-25">
@@ -10,7 +12,7 @@ function Body() {
           <div className="space-y-6">
             <h1 className="text-5xl">
               Transforming <span className="text-[#54bd95]">Healthcare</span>{" "}
-            <br />
+              <br />
               Through <span className="text-[#54bd95]">Technology</span>
             </h1>
             <p className="text-2xl">
@@ -43,10 +45,12 @@ function Body() {
               Enter valid email address
             </div>
           </div>
-          <button className="btn mt-3 bg-[#1c7856] text-black-bold rounded-md cursor-pointer hover:bg-green-100 duration-300" onClick={()=>document.getElementById("my_modal_3").showModal()}>
+          <button
+            className="btn mt-3 bg-[#1c7856] text-black-bold rounded-md cursor-pointer hover:bg-green-100 duration-300"
+            onClick={() => navigate("/login")}
+          >
             Get Started
           </button>
-          <Login/>
         </div>
         <div className=" order-1 w-full md:w-1/2 ">
           <img

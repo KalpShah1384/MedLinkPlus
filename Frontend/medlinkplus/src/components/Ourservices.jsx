@@ -6,7 +6,8 @@ import Appoint from "../../public/Appoint.png";
 import Record from "../../public/Record.png";
 import QR from "../../public/QR.png";
 import Refills from "../../public/Refills.png";
-import Login from "./Login";
+import { useNavigate } from "react-router-dom";
+//import Login from "./Login";
 function Ourservices() {
   var settings = {
     dots: true,
@@ -42,6 +43,7 @@ function Ourservices() {
       },
     ],
   };
+  const navigate = useNavigate();
   return (
     <>
       <div className="my-25">
@@ -73,13 +75,10 @@ function Ourservices() {
                     <div className="card-actions">
                       <button
                         className="btn bg-[#1c7856] hover:bg-green-200 cursor-pointer duration-300 rounded-lg"
-                        onClick={() =>
-                          document.getElementById("my_modal_3").showModal()
-                        }
+                        onClick={() => navigate("/login")}
                       >
                         Enter
                       </button>
-                      <Login />
                     </div>
                   </div>
                 </div>
@@ -104,13 +103,10 @@ function Ourservices() {
                     <div className="card-actions">
                       <button
                         className="btn bg-[#1c7856] hover:bg-green-200 cursor-pointer duration-300 rounded-lg"
-                        onClick={() =>
-                          document.getElementById("my_modal_3").showModal()
-                        }
+                        onClick={() => navigate("/login")}
                       >
                         Enter
                       </button>
-                      <Login />
                     </div>
                   </div>
                 </div>
@@ -130,13 +126,10 @@ function Ourservices() {
                     <div className="card-actions">
                       <button
                         className="btn bg-[#1c7856] hover:bg-green-200 cursor-pointer duration-300 rounded-lg"
-                        onClick={() =>
-                          document.getElementById("my_modal_3").showModal()
-                        }
+                        onClick={() => navigate("/login")}
                       >
                         Enter
                       </button>
-                      <Login />
                     </div>
                   </div>
                 </div>
@@ -157,13 +150,10 @@ function Ourservices() {
                     <div className="card-actions">
                       <button
                         className="btn bg-[#1c7856] hover:bg-green-200 cursor-pointer duration-300 rounded-lg "
-                        onClick={() =>
-                          document.getElementById("my_modal_3").showModal()
-                        }
+                        onClick={() => navigate("/login")}
                       >
                         Enter
                       </button>
-                      <Login />
                     </div>
                   </div>
                 </div>

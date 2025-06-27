@@ -1,101 +1,142 @@
-import React, { useRef } from "react";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
+import React, { useState, useContext, useEffect } from "react";
+import { AppContext } from "../context/AppContext.jsx";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-function Login() {
-  const{backendUrl,token , setToken} = useContext(AppContext)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+const Login = () => {
+  const { backendUrl, setToken } = useContext(AppContext);
+  const [state, setState] = useState("Login"); // or 'Sign Up'
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
-  const dialogRef = useRef(null);
+  const navigate = useNavigate()
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
 
-  const onSubmit = (data) => {
-    console.log(data);
-    if (dialogRef.current) {
-      dialogRef.current.close();
+    try {
+      if (!backendUrl) {
+        toast.error("Backend URL not configured");
+        return;
+      }
+
+      if (state === "Login") {
+        const { data } = await axios.post(`${backendUrl}/api/user/login`, {
+          email,
+          password,
+        });
+        console.log("Login response:", data);
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          toast.success("Logged in successfully!");
+          navigate("/");
+        } else {
+          toast.error(data.message || "Login failed");
+        }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/user/register`, {
+          name,
+          email,
+          password,
+        });
+        console.log("Register response:", data);
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+          toast.success("Account created successfully!");
+        } else {
+          toast.error(data.message || "Sign up failed");
+        }
+      }
+    } catch (error) {
+      console.error("Auth error:", error);
+      toast.error(error.response?.data?.message || error.message);
     }
-  };
-
-  const handleClose = () => {
-    if (dialogRef.current) {
-      dialogRef.current.close();
-    }
-  };
+  }
 
   return (
-    <div>
-      <dialog ref={dialogRef} id="my_modal_3" className="modal">
-        <div className="modal-box">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <button
-              type="button" // Important: Prevent form submission
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={handleClose}
-            >
-              ✕
-            </button>
-            <h3 className="font-bold text-xl">Login</h3>
-            <div className="mt-5 space-y-2">
-              <span>Email :</span>
-              <br />
-              <input
-                type="email"
-                placeholder="Enter your Email"
-                className="w-80 py-2 px-3 border rounded-md outline-none"
-                {...register("email", { required: true })}
-              />
-              <br />
-              {errors.email && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
-              )}
-            </div>
-            <div className="mt-5 space-y-2">
-              <span>Password :</span>
-              <br />
-              <input
-                type="password"
-                placeholder="Enter your Password"
-                className="w-80 py-2 px-3 border rounded-md outline-none"
-                {...register("password", { required: true })}
-              />
-              <br />
-              {errors.password && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
-              )}
-            </div>
-            <div className="mt-5 space-y-2 flex justify-around">
-              <button
-                type="submit"
-                className="bg-[#1c7856] text-white py-2 px-4 rounded-md hover:bg-green-300 duration-300 cursor-pointer"
-              >
-                Login
-              </button>
-              <p className="mt-2 text-lg">
-                Not Registered?{" "}
-                <Link
-                  to="/signup"
-                  className="underline text-blue-700 cursor-pointer"
-                >
-                  Signup
-                </Link>
-              </p>
-            </div>
-          </form>
+    <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center">
+      <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg">
+        <p className="text-2xl font-bold">
+          {state === "Sign Up" ? "Create Account" : "Login"}
+        </p>
+        <p className="mt-1">
+          Please {state === "Sign Up" ? "sign up" : "login"} to continue.
+        </p>
+
+        {state === "Sign Up" && (
+          <div className="w-full">
+            <p>Name</p>
+            <input
+              className="border border-zinc-300 rounded w-full p-2 mt-1"
+              type="text"
+              placeholder="Enter your name"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              required
+            />
+          </div>
+        )}
+
+        <div className="w-full">
+          <p>Email</p>
+          <input
+            className="border border-zinc-300 rounded w-full p-2 mt-1"
+            type="email"
+            placeholder="Enter your email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            required
+          />
         </div>
-      </dialog>
-      {/* Example usage of the modal, you'll need to add your trigger button */}
-      {/* <button onClick={() => dialogRef.current.showModal()}>Open Login Modal</button> */}
-    </div>
+
+        <div className="w-full">
+          <p>Password</p>
+          <input
+            className="border border-zinc-300 rounded w-full p-2 mt-1"
+            type="password"
+            placeholder="Enter your password"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="bg-[#1c7856] text-white w-full py-2 rounded-md text-base cursor-pointer"
+        >
+          {state === "Sign Up" ? "Sign Up" : "Login"}
+        </button>
+
+        {state === "Sign Up" ? (
+          <p>
+            Already have an account?{" "}
+            <span
+              onClick={() => setState("Login")}
+              className="text-blue-500 underline cursor-pointer"
+            >
+              Login here
+            </span>
+          </p>
+        ) : (
+          <p>
+            Create a new account?{" "}
+            <span
+              onClick={() => setState("Sign Up")}
+              className="text-blue-500 underline cursor-pointer"
+            >
+              Click here
+            </span>
+          </p>
+        )}
+      </div>
+    </form>
   );
-}
+};
 
 export default Login;
