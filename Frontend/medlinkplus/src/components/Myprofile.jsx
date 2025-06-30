@@ -1,182 +1,148 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { assets } from "../../../../assets/assets/assets_frontend/assets";
-const Myprofile = () => {
-  const [userData, setuserData] = useState({
-    name: "Tejas Kumar",
-    image: assets.profile_pic,
-    email: "tejaskumar@gmail.com",
-    phone: "+91 990987654",
-    address: {
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      country: "India",
-      pincode: "462001",
-    },
-    gender: "Male",
-    dob: "1998-01-01",
-  });
-  const [isEdit, setisEdit] = useState(true);
-  return (
-    <div className="max-w-lg mx-auto flex flex-col gap-2 text-sm mt-35 my-10 px-4">
-      <img className="w-36 rounded-lg" src={userData.image} alt="" />
-      {isEdit ? (
-        <input
-          className="bg-gray-50 text-3xl font-medium max-w-60 mt-4"
-          type="text"
-          value={userData.name}
-          onChange={(e) =>
-            setuserData((prev) => ({ ...prev, name: e.target.value }))
-          }
-        />
-      ) : (
-        <p className="font-medium text-3xl text-neutral-800 mt-4">
-          {userData.name}
-        </p>
-      )}
-      <hr className="bg-zinc-400 h-[1px] border-none" />
-      <div>
-        <p className="text-neutral-500 underline mt-3">Contact Information</p>
-        <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
-          <p className="font-medium ">Email :</p>
-          <p className="text-blue-500">{userData.email}</p>
-          <p className="font-medium">Phone :</p>
-          {isEdit ? (
-            <input
-              className="bg-gray-100 max-w-52"
-              type="text"
-              value={userData.phone}
-              onChange={(e) =>
-                setuserData((prev) => ({ ...prev, phone: e.target.value }))
-              }
-            />
-          ) : (
-            <p className="text-blue-500">{userData.phone}</p>
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+const MyProfile = () => {
+  const { userData, setuserData, token, backendUrl, loadUserProfileData } = useContext(AppContext);
+  const [isEdit, setIsEdit] = useState(false);
+  const [image, setImage] = useState(null);
+
+  const updateProfile = async () => {
+    try {
+      if (!userData.name.trim()) return toast.error("Name is required");
+      if (!userData.phone.trim()) return toast.error("Phone number is required");
+      if (!userData.dateOfBirth) return toast.error("Date of birth is required");
+
+      const formData = new FormData();
+      formData.append("name", userData.name);
+      formData.append("phone", userData.phone);
+      if (userData.address && Object.keys(userData.address).length > 0)
+        formData.append("address", JSON.stringify(userData.address));
+      if (userData.gender) formData.append("gender", userData.gender);
+      formData.append("dateOfBirth", userData.dateOfBirth);
+      if (image) formData.append("image", image);
+
+      const { data } = await axios.post(`${backendUrl}/api/user/updateprofile`, formData, {
+        headers: { token },
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        await loadUserProfileData();
+        setIsEdit(false);
+        setImage(null);
+      } else {
+        toast.error(data.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred while updating profile");
+    }
+  };
+
+  return userData ? (
+    <div className="w-full max-w-screen-xl h-fit min-h-[90vh] mx-auto mt-12 px-10 py-16 bg-white rounded-3xl shadow-2xl border border-[#cde9de] flex flex-col justify-between mb-20">
+      <div className="flex flex-col items-center mb-12 ">
+        <label htmlFor="image" className="relative group cursor-pointer">
+          <img
+            src={image ? URL.createObjectURL(image) : userData.image}
+            alt="Profile"
+            className="w-48 h-48 rounded-full object-cover border-4 border-[#1c7856] shadow-xl group-hover:scale-105 transition-transform duration-300"
+          />
+          {isEdit && (
+            <div className="absolute bottom-0 right-0 bg-white border border-[#1c7856] p-1 rounded-full shadow-md">
+              <img src={assets.upload_icon} alt="Upload" className="w-6 h-6" />
+            </div>
           )}
-          <p className="font-medium ">Address :</p>
-          {isEdit ? (
-            <p>
-              <input
-                className="bg-gray-50 "
-                onChange={(e) =>
-                  setuserData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, city: e.target.value },
-                  }))
-                }
-                value={userData.address.city}
-                type="text"
-                name=""
-                id=""
-              />
-              <br />
-              <input
-                className="bg-gray-50 "
-                onChange={(e) =>
-                  setuserData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, state: e.target.value },
-                  }))
-                }
-                value={userData.address.state}
-                type="text"
-                name=""
-                id=""
-              />
-              <br />
-              <input
-                className="bg-gray-50 "
-                onChange={(e) =>
-                  setuserData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, country: e.target.value },
-                  }))
-                }
-                value={userData.address.country}
-                type="text"
-                name=""
-                id=""
-              />
-              <br />
-              <input
-                className="bg-gray-50 "
-                onChange={(e) =>
-                  setuserData((prev) => ({
-                    ...prev,
-                    address: { ...prev.address, pincode: e.target.value },
-                  }))
-                }
-                value={userData.address.pincode}
-                type="text"
-                name=""
-                id=""
-              />
-            </p>
-          ) : (
-            <p className="text-gray-500">
-              {userData.address.city}
-              <br />
-              {userData.address.state}
-              <br />
-              {userData.address.country}
-              <br />
-              {userData.address.pincode}
-            </p>
-          )}
-        </div>
+          <input
+            type="file"
+            id="image"
+            hidden
+            onChange={(e) => setImage(e.target.files[0])}
+          />
+        </label>
+        {isEdit ? (
+          <input
+            type="text"
+            value={userData.name}
+            onChange={(e) => setuserData({ ...userData, name: e.target.value })}
+            className="mt-4 text-center text-3xl font-semibold border-b border-[#1c7856] focus:outline-none focus:border-[#1c7856]"
+          />
+        ) : (
+          <h2 className="mt-4 text-3xl font-bold text-[#1c7856]">{userData.name}</h2>
+        )}
+        <p className="text-gray-600 text-lg">{userData.email}</p>
       </div>
-      <div>
-        <p className="text-neutral-500 underline mt-3">Basic Information </p>
-        <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
-          <p className="font-medium ">Gender :</p>
-          {isEdit ? (
-            <select
-              className="max-w-20 bg-gray-100"
-              onChange={(e) =>
-                setuserData((prev) => ({ ...prev, gender: e.target.value }))
-              }
-              value={userData.gender}
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          ) : (
-            <p className="text-gray-400">{userData.gender}</p>
-          )}
-          <p className="font-medium">DOB:</p>
-          {isEdit ? (
-            <input
-              className="max-w-28 bg-gray-100"
-              type="date"
-              value={userData.dob}
-              onChange={(e) =>
-                setuserData((prev) => ({ ...prev, dob: e.target.value }))
-              }
-            />
-          ) : (
-            <p className="text-gray-400">{userData.dob}</p>
-          )}
-        </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10">
+        {[
+          { label: "Phone", field: "phone" },
+          { label: "Date of Birth", field: "dateOfBirth", type: "date" },
+          { label: "Gender", field: "gender", type: "select" },
+          { label: "City", field: "city", group: "address" },
+          { label: "State", field: "state", group: "address" },
+          { label: "Country", field: "country", group: "address" },
+          { label: "Pincode", field: "pincode", group: "address" },
+        ].map(({ label, field, type, group }) => (
+          <div key={field}>
+            <label className="text-sm font-medium text-[#1c7856]">{label}</label>
+            {isEdit ? (
+              type === "select" ? (
+                <select
+                  value={userData[field]}
+                  onChange={(e) => setuserData({ ...userData, [field]: e.target.value })}
+                  className="w-full mt-1 px-3 py-2 border border-[#cce3d9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1c7856]"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              ) : (
+                <input
+                  type={type || "text"}
+                  value={group ? userData[group]?.[field] || "" : userData[field] || ""}
+                  onChange={(e) =>
+                    group
+                      ? setuserData((prev) => ({
+                          ...prev,
+                          [group]: { ...prev[group], [field]: e.target.value },
+                        }))
+                      : setuserData({ ...userData, [field]: e.target.value })
+                  }
+                  className="w-full mt-1 px-3 py-2 border border-[#cce3d9] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1c7856]"
+                />
+              )
+            ) : (
+              <p className="mt-1 text-gray-800">
+                {group ? userData[group]?.[field] : userData[field]}
+              </p>
+            )}
+          </div>
+        ))}
       </div>
-      <div className="mt-10 ">
+
+      <div className="flex justify-center mt-16">
         {isEdit ? (
           <button
-            className="border border-primary px-8 py-2 rounded-full cursor-pointer hover:bg-primary hover:text-white transition-all"
-            onClick={() => setisEdit(false)}
+            onClick={updateProfile}
+            className="bg-[#1c7856] text-white text-lg px-10 py-3 rounded-full hover:bg-[#155d42] transition shadow-md"
           >
-            Save Information
+            Save Changes
           </button>
         ) : (
           <button
-            className="border border-primary px-8 py-2 rounded-full cursor-pointer hover:bg-primary hover:text-white transition-all"
-            onClick={() => setisEdit(true)}
+            onClick={() => setIsEdit(true)}
+            className="border border-[#1c7856] text-[#1c7856] text-lg px-10 py-3 rounded-full hover:bg-[#1c7856] hover:text-white transition shadow-md"
           >
-            Edit
+            Edit Profile
           </button>
         )}
       </div>
     </div>
-  );
+  ) : null;
 };
 
-export default Myprofile;
+export default MyProfile;

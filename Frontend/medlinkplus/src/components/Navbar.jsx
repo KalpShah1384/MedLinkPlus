@@ -10,7 +10,7 @@ function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { token, setToken } = useContext(AppContext);
+  const { token, setToken ,userData} = useContext(AppContext);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -155,7 +155,7 @@ function Navbar() {
 
           {/* Profile/Login Dropdown */}
           <div ref={dropdownRef}>
-            {token ? (
+            {token && userData  ? (
               <div className="relative">
                 <div
                   className="flex items-center gap-2 cursor-pointer"
@@ -163,7 +163,7 @@ function Navbar() {
                 >
                   <img
                     className="w-10 rounded-full"
-                    src={Profilepic}
+                    src={userData.image}
                     alt="Profile"
                   />
                   <img className="w-3" src={dropdown} alt="Dropdown Icon" />

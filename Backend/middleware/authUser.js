@@ -1,19 +1,32 @@
 import jwt from "jsonwebtoken";
+
 const authUser = (req, res, next) => {
   try {
     const { token } = req.headers;
+
     if (!token) {
-      return res.json({ success: false, message: "Not Authorized" });
+      return res.status(401).json({
+        success: false,
+        message: "Not Authorized: No token provided",
+      });
     }
-    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-    // if (token_decode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
-    //   return res.json({ success: false, message: "Not Authorized" });
-      // }
-    req.body.userId = token_decode.id;
+
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    // ✅ Preferred approach: store authenticated user info in req.user
+    req.user = {
+      id: decodedToken.id,
+      email: decodedToken.email || null, // optional if token contains email
+    };
+
     next();
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    console.error("Auth Error:", error.message);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
   }
 };
+
 export default authUser;

@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../../../../assets/assets/assets_frontend/assets";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Appointments = () => {
   const { docId } = useParams();
@@ -17,6 +19,7 @@ const Appointments = () => {
     "Saturday",
   ];
 
+  const navigate = useNavigate();
   const [docInfo, setdocInfo] = useState({});
   const [docslot, setdocslot] = useState([]);
   const [slotindex, setslotindex] = useState(0);
@@ -74,10 +77,37 @@ const Appointments = () => {
     if (docInfo?._id) getAvailableSlots();
   }, [docInfo]);
 
+  const bookAppointment = async () => {
+    const token = localStorage.getItem("token"); // <-- fix added
+
+    if (!token) {
+      toast.warn("Please login to book an appointment");
+      return navigate("/login");
+    }
+    try {
+      const date = docslot[slotindex][0].datetime
+      let day = date.getDate()
+      let month = date.getMonth() + 1
+      let year = date.getFullYear()
+      const slotDate = day + "_" + month + "_" + year
+      const { data } = await axios.post(backendUrl + '/api/appointment/bookappointment', { slotDate, slotTime, docId }, { headers: { token } })
+      if (data.success) {
+        toast.success(data.message)
+        getDoctorsData()
+        navigate("/myappointment")
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  };
+
   return (
     docInfo && (
       <div className="mt-40 px-4 flex justify-center">
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-6xl mb-20"> {/* Added margin bottom to avoid sticking to footer */}
           {/* Profile Section */}
           <div className="flex flex-col sm:flex-row gap-6 sm:h-[320px]">
             {/* Image */}
@@ -167,7 +197,10 @@ const Appointments = () => {
                   </p>
                 ))}
             </div>
-            <button className="bg-[#1c7856] cursor-pointer text-sm font-light text-white px-14 py-3 rounded-full my-6 ">
+            <button
+              onClick={bookAppointment}
+              className="bg-[#1c7856] cursor-pointer text-sm font-light text-white px-14 py-3 rounded-full my-6"
+            >
               Book an Appointment
             </button>
           </div>
