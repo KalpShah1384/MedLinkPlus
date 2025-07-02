@@ -118,7 +118,7 @@ function Navbar() {
           <img
             onClick={() => navigate("/")}
             src={Logo}
-            className="h-12 w-auto object-contain cursor-pointer"
+            className="h-12 w-auto object-contain cursor-pointer "
             alt="Logo"
           />
         </div>

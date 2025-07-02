@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { createContext } from "react";
-//import { doctors } from "../../../../assets/assets/assets_frontend/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 export const AppContext = createContext();
@@ -10,6 +9,22 @@ const AppContextProvider = (props) => {
     const [doctors, setDoctors] = useState([])
     const[token,setToken] = useState(localStorage.getItem("token")?localStorage.getItem("token"):false)
     const[userData,setuserData] = useState(false)
+    const [theme, setTheme] = useState(() => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        return savedTheme;
+    });
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+    };
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
+
     const getDoctorsdata = async () => {
         try {
             const { data } = await axios.get(backendUrl + '/api/doctor/list')
@@ -42,7 +57,9 @@ const AppContextProvider = (props) => {
       doctors,getDoctorsdata,
       currencySymbol,
       token,
-      setToken,backendUrl,userData,setuserData,loadUserProfileData
+      setToken,backendUrl,userData,setuserData,loadUserProfileData,
+      theme,
+      toggleTheme
     };
     useEffect(() => {
         getDoctorsdata()

@@ -10,6 +10,7 @@ import ConsultDoc from './Consultdr/ConsultDoc';
 import Appointmentid from './appointment/Appointmentid';
 import Profile from './Profile/Profile';
 import UserAppoint from './Myappoint/UserAppoint';
+import ThemeToggle from './components/ThemeToggle';
 
 import { ToastContainer, toast } from "react-toastify";
 import Login from './components/Login';
@@ -21,6 +22,7 @@ function App() {
     <>
       {/* <Home />
       <AboutUs/> */}
+      <ThemeToggle />
       <ToastContainer/>
       <Routes>
         <Route path="/" element={<Home />} />
