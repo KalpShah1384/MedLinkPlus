@@ -1,93 +1,135 @@
-import React from "react";
-import contact from "../../public/Contactus.png"
+import React, { useState } from "react";
+import contact from "../../public/Contactus.png";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+
 function Contact() {
-    const {
-      register,
-      handleSubmit,
-      formState: { errors },
-    } = useForm();
-    return (
-      <>
-        <div className="max w-scrren-2xl container mx-auto md:px-20 px-4 flex flex-col md:flex-row">
-          <div className=" w-full order-2 md:order-1 md:w-1/2 mt-20">
-            <h1 className="font-bold text-4xl">
-              Contact <span className="text-[#1c7856] font-bold">Us</span>
-            </h1>
-            <div className="mt-5 space-y-2">
-              <span>Name :</span>
-              <br />
-              {errors.name && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
-              )}
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+      const response = await axios.post("http://localhost:4000/api/contact/submit", data);
+      setSuccessMessage("Message sent successfully!");
+      reset();
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.error || "Failed to send message. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-screen-xl mx-auto px-6 py-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        {/* Image */}
+        <div className="flex justify-center">
+          <img
+            src={contact}
+            alt="Contact"
+            className="w-full max-w-md h-auto object-contain"
+          />
+        </div>
+
+        {/* Form */}
+        <div className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 shadow-xl rounded-xl p-8 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-4xl font-bold mb-6">
+            Contact <span className="text-[#1c7856]">Us</span>
+          </h2>
+
+          {successMessage && (
+            <div className="mb-4 p-4 bg-green-100 dark:bg-green-200/10 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500 rounded-md">
+              {successMessage}
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="mb-4 p-4 bg-red-100 dark:bg-red-200/10 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-500 rounded-md">
+              {errorMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
+              <label className="block font-medium">Name</label>
               <input
                 type="text"
                 placeholder="Enter your name"
-                className="w-80 py-2 px-3 border rounded-md mt-2"
+                className="w-full py-2 px-4 mt-1 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1c7856] text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 {...register("name", { required: true })}
               />
-            </div>
-            <div className="mt-5 space-y-2">
-              <span>Email :</span>
-              <br />
-              {errors.email && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
+              {errors.name && (
+                <span className="text-sm text-red-500">This field is required</span>
               )}
+            </div>
+
+            <div>
+              <label className="block font-medium">Email</label>
               <input
-                type="text"
-                placeholder="Enter your Email"
-                className="w-80 py-2 px-3 border rounded-md mt-2"
+                type="email"
+                placeholder="Enter your email"
+                className="w-full py-2 px-4 mt-1 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1c7856] text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 {...register("email", { required: true })}
               />
-            </div>
-            <div className="mt-5 space-y-2">
-              <span>Phone number :</span>
-              <br />
-              {errors.phone && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
+              {errors.email && (
+                <span className="text-sm text-red-500">This field is required</span>
               )}
+            </div>
+
+            <div>
+              <label className="block font-medium">Phone Number</label>
               <input
-                type="text"
-                placeholder="Enter your number"
-                className="w-80 py-2 px-3 border rounded-md mt-2"
+                type="tel"
+                placeholder="Enter your phone number"
+                className="w-full py-2 px-4 mt-1 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1c7856] text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 {...register("phone", { required: true })}
               />
-            </div>
-            <div className="mt-5 space-y-2">
-              <span>Message :</span>
-              <br />
-              {errors.message && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
+              {errors.phone && (
+                <span className="text-sm text-red-500">This field is required</span>
               )}
+            </div>
+
+            <div>
+              <label className="block font-medium">Message</label>
               <textarea
-                placeholder="Message us"
-                className="w-80 py-2 px-3 border rounded-md mt-2"
+                rows="4"
+                placeholder="Your message"
+                className="w-full py-2 px-4 mt-1 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#1c7856] text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 {...register("message", { required: true })}
               ></textarea>
+              {errors.message && (
+                <span className="text-sm text-red-500">This field is required</span>
+              )}
             </div>
-            <div className="mt-5 space-y-2 flex ">
+
+            <div className="text-center pt-3">
               <button
                 type="submit"
-                className="bg-[#1c7856] w-30 text-white py-2 px-4 rounded-lg hover:bg-green-300 duration-300 cursor-pointer"
+                disabled={loading}
+                className="bg-[#1c7856] hover:bg-[#166b4a] text-white font-semibold py-2 px-8 rounded-lg transition duration-300 disabled:opacity-60"
               >
-                Submit
+                {loading ? "Sending..." : "Submit"}
               </button>
             </div>
-          </div>
-          <div className="order-1 w-full md:w-1/2">
-            <img src={contact} alt="contact" className="w-150 h-120 mt-45" />
-          </div>
+          </form>
         </div>
-      </>
-    );
-  }
+      </div>
+    </div>
+  );
+}
 
 export default Contact;
