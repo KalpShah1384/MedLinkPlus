@@ -1,9 +1,54 @@
-import React, { useContext } from "react";
+import React, { useContext , useEffect } from "react";
 import { AppContext } from "../context/AppContext";
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function DrAppoint() {
-  const { doctors } = useContext(AppContext);
+  const { backendUrl , token ,getDoctorsdata } = useContext(AppContext);
+  const [appointments, setAppointments] = useState([]);
+  const months = [
+    " ","January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  const slotDateFormat = (slotDate) => {
+    const dateArray = slotDate.split("_");
+    return dateArray[0]+" " + months[Number(dateArray[1])]+ " "  + dateArray[2]
+  }
+  const getuserAppointments = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + '/api/user/appointments', { headers: { token } });
+      if (data.success) {
+        setAppointments(data.appointments.reverse());
+        console.log(data.appointments);
+        
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message)
+      
+    }
+  }
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const {data} = await axios.post(backendUrl+'/api/user/cancelappointment',{appointmentId},{headers:{token}})
+      if (data.success) {
+        toast.success(data.message);
+        getuserAppointments();
+        getDoctorsdata()
+      } else {
+        toast.error(data.message);
+      }
 
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      
+    }
+  }
+  useEffect(() => {
+    if (token) {
+      getuserAppointments();
+    }
+  },[token])
   return (
     <div className="mt-30 px-4 my-8">
       <p className="pb-3 mt-12 text-xl font-semibold text-gray-800 border-b border-gray-300">
@@ -11,43 +56,53 @@ function DrAppoint() {
       </p>
 
       <div className="grid gap-6 mt-8">
-        {doctors.slice(0, 4).map((item, index) => (
+        {appointments.map((item, index) => (
           <div
             key={index}
             className="flex flex-col sm:flex-row gap-6 p-4 rounded-xl shadow-md border border-gray-200 bg-white hover:shadow-lg transition-shadow"
           >
-
             <div className="flex-shrink-0">
               <img
                 className="w-32 h-32 object-cover bg-indigo-100 rounded-lg"
-                src={item.image}
+                src={item.docData.image}
                 alt={item.name}
               />
             </div>
 
-
             <div className="flex-1 text-gray-700 space-y-1">
-              <p className="text-lg font-bold text-gray-900">{item.name}</p>
-              <p className="text-sm">{item.speciality}</p>
+              <p className="text-lg font-bold text-gray-900">
+                {item.docData.name}
+              </p>
+              <p className="text-sm">{item.docData.speciality}</p>
 
               <p className="mt-2 font-semibold text-gray-600">Address:</p>
               <p className="text-sm">
-                {item.address.line1}, {item.address.line2}
+                {item.docData.address.line1}, {item.docData.address.line2}
               </p>
 
               <p className="mt-2 text-sm">
                 <span className="font-medium text-gray-800">Date & Time:</span>{" "}
-                10 May, 2025 | 8:30 PM
+                {slotDateFormat(item.slotDate)} | {item.slotTime}
               </p>
             </div>
 
             <div className="flex flex-col justify-center gap-2 mt-4 sm:mt-0">
-              <button className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md transition-all duration-300 cursor-pointer">
-                Pay Here
-              </button>
-              <button className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-all duration-300 cursor-pointer">
-                Cancel Appointment
-              </button>
+              {!item.cancel && (
+                <button className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md transition-all duration-300 cursor-pointer">
+                  Pay Here
+                </button>
+              ) }
+              {!item.cancel && (
+                <button
+                  onClick={() => cancelAppointment(item._id)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-all duration-300 cursor-pointer"
+                >
+                  Cancel Appointment
+                </button>
+              )}
+              {item.cancel && (
+                <p className="text-sm text-red-500 font-medium">Cancelled</p>
+              )}
             </div>
           </div>
         ))}

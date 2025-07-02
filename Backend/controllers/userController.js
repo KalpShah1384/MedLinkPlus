@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointment.js";
-
+import razorpay from "razorpay";
 // ================= Register User ===================
 const registerUser = async (req, res) => {
   try {
@@ -153,7 +153,9 @@ const updateUserProfile = async (req, res) => {
 //Api for appontment 
 const bookAppointment = async (req, res) => {
   try {
-    const { userId, docId, slotDate, slotTime } = req.body;
+    const { docId, slotDate, slotTime } = req.body;
+    const userId = req.user.id;
+
 
     const docData = await doctorModel.findById(docId).select('-password')
     if (!docData.available) {
@@ -179,7 +181,7 @@ const bookAppointment = async (req, res) => {
       docId,
       userData,
       docData,
-      amount:docData.fee,
+      amount:docData.fees,
       slotDate,
       slotTime,
       date: Date.now(),
@@ -197,4 +199,52 @@ const bookAppointment = async (req, res) => {
   }
 }
 
-export { registerUser, loginUser, getUserProfile, updateUserProfile , bookAppointment};
+//API to get the userappointments from frontend myappoint
+
+const listAppointment = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const appointments = await appointmentModel.find({ userId });
+
+    res.json({success:true,appointments})
+  } catch (error) {
+    console.log("Update Error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+
+}
+// Cancel the appointment
+
+const cancelAppointment = async (req, res) => {
+  try {
+    const { appointmentId } = req.body
+    const userId = req.user.id;
+    const appointmentData = await appointmentModel.findById(appointmentId)
+    if (appointmentData.userId !== userId) {
+      return res.json({ success: false, message: "You are not authorized to cancel this appointment" })
+    }
+    await appointmentModel.findByIdAndUpdate(appointmentId, { cancel: true })
+    //updating drslot
+    const { docId, slotDate, slotTime } = appointmentData
+    const doctorData = await doctorModel.findById(docId)
+    let slots_booked = doctorData.slots_booked
+    slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked })
+    res.json({ success: true, message: "Appointment cancelled successfully" })
+  } catch (error) {
+    console.log(error)
+    res.json({success:false,message:error.message})
+  }
+}
+//API to make payment using razorpay
+// const razorpayInstance = new razorpay(
+//   {
+//     key_id: "",
+//     key_secret:""
+//   }
+// )
+// const paymentRazorpay = async1384(req, res)=> {
+
+// }
+
+export { registerUser, loginUser, getUserProfile, updateUserProfile , bookAppointment , listAppointment,cancelAppointment};

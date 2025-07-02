@@ -7,7 +7,7 @@ import axios from "axios";
 
 const Appointments = () => {
   const { docId } = useParams();
-  const { doctors, currencySymbol } = useContext(AppContext);
+  const { doctors, currencySymbol  , backendUrl , getDoctorsdata} = useContext(AppContext);
 
   const daysOfWeek = [
     "Sunday",
@@ -59,11 +59,20 @@ const Appointments = () => {
             hour: "2-digit",
             minute: "2-digit",
           });
+          let day = currentDate.getDate()
+          let month = currentDate.getMonth() + 1
+          let year = currentDate.getFullYear()
+          
+          const slotDate = day + "_" + month + "_" + year
+          const slotTime = slot
 
-          timeslots.push({
-            datetime: new Date(currentDate),
-            time: slot,
-          });
+          const isSlotAvailable = docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime)?false:true
+          if (isSlotAvailable) {
+            timeslots.push({
+              datetime: new Date(currentDate),
+              time: slot,
+            });
+          }
 
           currentDate.setMinutes(currentDate.getMinutes() + 30);
         }
@@ -90,11 +99,11 @@ const Appointments = () => {
       let month = date.getMonth() + 1
       let year = date.getFullYear()
       const slotDate = day + "_" + month + "_" + year
-      const { data } = await axios.post(backendUrl + '/api/appointment/bookappointment', { slotDate, slotTime, docId }, { headers: { token } })
+      const { data } = await axios.post(backendUrl + '/api/user/bookappointment', { slotDate, slotTime, docId }, { headers: { token } })
       if (data.success) {
         toast.success(data.message)
-        getDoctorsData()
-        navigate("/myappointment")
+        getDoctorsdata()
+        navigate("/userappoint")
       } else {
         toast.error(data.message)
       }

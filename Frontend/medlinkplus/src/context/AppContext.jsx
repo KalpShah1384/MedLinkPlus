@@ -46,7 +46,7 @@ const AppContextProvider = (props) => {
     };
     useEffect(() => {
         getDoctorsdata()
-    })
+    },[])
     useEffect(() => {
         if (token) {
             loadUserProfileData()
