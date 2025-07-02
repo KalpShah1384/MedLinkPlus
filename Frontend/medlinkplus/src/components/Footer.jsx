@@ -108,9 +108,9 @@ function Footer() {
 
         <nav className="min-w-[150px] mb-6 sm:mb-0">
           <h6 className="text-[#d9d9d9] font-bold text-lg mb-3">Legal</h6>
-          <a className="link link-hover block text-sm mb-1">Terms of use</a>
-          <a className="link link-hover block text-sm mb-1">Privacy policy</a>
-          <a className="link link-hover block text-sm mb-1">Cookie policy</a>
+          <a className="link link-hover block text-sm mb-1" onClick={() => navigate('/legal/terms-of-use')}>Terms of use</a>
+          <a className="link link-hover block text-sm mb-1" onClick={() => navigate('/legal/privacy-policy')}>Privacy policy</a>
+          <a className="link link-hover block text-sm mb-1" onClick={() => navigate('/legal/cookie-policy')}>Cookie policy</a>
         </nav>
       </footer>
 
