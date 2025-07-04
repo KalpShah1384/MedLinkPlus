@@ -1,0 +1,33 @@
+/* Custom slim scrollbar for appointments area */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* For Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+}
+
+/* Mobile card layout for appointments */
+@media (max-width: 639px) {
+  .mobile-appointment-card {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    padding: 1.5rem !important;
+    margin-bottom: 1.5rem;
+    background: #f8fafc;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 8px rgba(16,30,54,0.06);
+    border: 1px solid #e5e7eb;
+  }
+}

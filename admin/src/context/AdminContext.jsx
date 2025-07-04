@@ -5,7 +5,8 @@ import { toast } from 'react-toastify'
 export const AdminContext = createContext();
 const AdminContextProvider = (props) => {
   const [AdminToken, setAdminToken] = useState(localStorage.getItem("AdminToken") ? localStorage.getItem("AdminToken") : "");
-  const[doctors,setDoctors] = useState([])
+  const [doctors, setDoctors] = useState([])
+  const[appointments,setAppointments] = useState([])
   const backendUrl = import.meta.env.VITE_BACKEND_URL
   const getAllDoctors = async () => {
     try {
@@ -38,10 +39,37 @@ const AdminContextProvider = (props) => {
   }
 }
 
+  const getAllAppointments = async () => {
+   try {
+     const { data } = await axios.get(backendUrl + '/api/admin/appointments-admin', { headers: { atoken: AdminToken } })
+     if (data.success) {
+       setAppointments(data.appointments)
+       console.log(data.appointments)
+     } else {
+       toast.error(data.message)
+     }
+   } catch (error) {
+    toast.error(error.message)
+   }
+  }
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(backendUrl + '/api/admin/cancelAppointment', { appointmentId }, { headers: { atoken: AdminToken } })
+      if (data.success) {
+        toast.success(data.message)
+        getAllAppointments()
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
   const value = {
     AdminToken,
     setAdminToken,
-    backendUrl,doctors,getAllDoctors,changeAvailability,
+    backendUrl, doctors, getAllDoctors, changeAvailability,
+    appointments,setAppointments,getAllAppointments,cancelAppointment
   }
 
   return(
