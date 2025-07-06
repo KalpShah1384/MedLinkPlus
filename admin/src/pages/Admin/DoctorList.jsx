@@ -1,6 +1,6 @@
   import React, { useContext, useEffect, useState } from "react";
 import { AdminContext } from "../../context/AdminContext";
-import DoctorProfile from "./DoctorProfile";
+import AdminDoctorProfile from "./DoctorProfile";
 
 const DoctorList = () => {
   const { doctors, AdminToken, getAllDoctors , changeAvailability} = useContext(AdminContext);
@@ -69,7 +69,7 @@ const DoctorList = () => {
       </div>
       {/* Doctor Profile Modal */}
       {selectedDoctor && (
-        <DoctorProfile doctor={selectedDoctor} onClose={() => setSelectedDoctor(null)} />
+        <AdminDoctorProfile doctor={selectedDoctor} onClose={() => setSelectedDoctor(null)} />
       )}
     </div>
   );
