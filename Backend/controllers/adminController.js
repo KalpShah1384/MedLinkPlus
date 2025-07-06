@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointment.js";
+import userModel from "../models/userModel.js";
 
 const addDoctor = async (req, res) => {
   try {
@@ -143,4 +144,61 @@ const appointmentCancel = async (req, res) => {
   }
 }
 
-export { addDoctor, loginAdmin , allDoctors,appointmentsAdmin, appointmentCancel };
+const adminDashboard = async (req, res) => {
+  try {
+    const doctors = await doctorModel.find({});
+    const users = await userModel.find({});
+    const appointments = await appointmentModel.find({});
+
+    // --- Analytics: Appointments per month (last 6 months) ---
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const now = new Date();
+    const appointmentTrends = Array(6).fill(0).map((_, i) => {
+      const month = (now.getMonth() - 5 + i + 12) % 12;
+      const year = now.getFullYear() - (now.getMonth() - 5 + i < 0 ? 1 : 0);
+      const count = appointments.filter(app => {
+        const d = new Date(app.date);
+        return d.getMonth() === month && d.getFullYear() === year;
+      }).length;
+      return { name: months[month], Appointments: count };
+    });
+
+    // --- Pie chart: Doctors vs Patients ---
+    const userDistribution = [
+      { name: 'Doctors', value: doctors.length },
+      { name: 'Patients', value: users.length }
+    ];
+
+    // --- Recent activity: show latest 5 appointments (rich info) ---
+    const recentActivity = appointments
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 5)
+      .map(app => ({
+        doctorName: app.docData?.name || `Dr.${app.docId}`,
+        doctorImage: app.docData?.image || null,
+        patientName: app.userData?.name || app.userId,
+        patientImage: app.userData?.image || null,
+        slotDate: app.slotDate,
+        slotTime: app.slotTime,
+        amount: app.amount,
+        status: app.cancel ? 'Cancelled' : (app.isCompleted ? 'Completed' : 'Upcoming'),
+        date: app.date,
+      }));
+
+    const dashData = {
+      doctors: doctors.length,
+      appointments: appointments.length,
+      patients: users.length,
+      appointmentTrends,
+      userDistribution,
+      recentActivity
+    };
+
+    res.json({ success: true, dashData });
+  } catch (error) {
+    console.log(error)
+    res.json({success:false,message:error.message})
+  }
+}
+
+export { addDoctor, loginAdmin , allDoctors,appointmentsAdmin, appointmentCancel , adminDashboard };

@@ -1,8 +1,10 @@
-import React, { useContext, useEffect } from "react";
+  import React, { useContext, useEffect, useState } from "react";
 import { AdminContext } from "../../context/AdminContext";
+import DoctorProfile from "./DoctorProfile";
 
 const DoctorList = () => {
   const { doctors, AdminToken, getAllDoctors , changeAvailability} = useContext(AdminContext);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   useEffect(() => {
     if (AdminToken) {
@@ -27,6 +29,7 @@ const DoctorList = () => {
             <div
               key={index}
               className="border border-blue-200 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:bg-blue-100"
+              onClick={() => setSelectedDoctor(item)}
             >
               <div className="bg-blue-50 w-full h-64 flex items-start justify-center">
                 <img
@@ -38,11 +41,12 @@ const DoctorList = () => {
               <div className="p-4">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <input
-                    onChange={()=>changeAvailability(item._id)}
+                    onChange={e => { e.stopPropagation(); changeAvailability(item._id); }}
                     type="checkbox"
                     checked={item.available}
                     readOnly
                     className="accent-green-500 w-4 h-4"
+                    onClick={e => e.stopPropagation()}
                   />
                   <label>
                     {item.available ? "Available" : "Not Available"}
@@ -63,6 +67,10 @@ const DoctorList = () => {
           </p>
         )}
       </div>
+      {/* Doctor Profile Modal */}
+      {selectedDoctor && (
+        <DoctorProfile doctor={selectedDoctor} onClose={() => setSelectedDoctor(null)} />
+      )}
     </div>
   );
 };

@@ -1,19 +1,25 @@
 import React, { useContext } from 'react'
-import Login from './pages/login'
+import Login from './pages/Login'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AdminContext } from './context/adminContext'
+import { AdminContext } from './context/AdminContext'
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import { Route, Routes } from 'react-router-dom';
-import DashBoard from './pages/Admin/Dashboard';
+import DashBoard from './pages/Admin/DashBoard';
 import AllAppointments from './pages/Admin/AllAppointments';
 import AddDoctor from './pages/Admin/AddDoctor';
 import DoctorList from './pages/Admin/DoctorList';
 import Footer from './components/Footer';
+import { DoctorContext } from './context/DoctorContext';
+import DoctorDashboard from './pages/Doctor/DoctorDashboard';
+import DoctorProfile from './pages/Admin/DoctorProfile';
+import DoctorAppointment from './pages/Doctor/DoctorAppointment';
+//import PatientList from './pages/Admin/PatientList';
 const App = () => {
-  const{AdminToken} = useContext(AdminContext)
-  return AdminToken ? (
+  const { AdminToken } = useContext(AdminContext)
+  const {dToken } = useContext(DoctorContext)
+  return AdminToken || dToken ? (
     <div>
       <ToastContainer />
       <Navbar />
@@ -25,6 +31,10 @@ const App = () => {
           <Route path="/all-appointments" element={<AllAppointments />} />
           <Route path="/add-doctor" element={<AddDoctor />} />
           <Route path="/doctor-list" element={<DoctorList />} />
+          {/* //<Route path="/patient-list" element={<PatientList />} /> */}
+          <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
+          <Route path="/doctor-profile" element={<DoctorProfile />} />
+          <Route path="/doctor-appointment" element={<DoctorAppointment />} />
         </Routes>
       </div>
       <Footer/>
