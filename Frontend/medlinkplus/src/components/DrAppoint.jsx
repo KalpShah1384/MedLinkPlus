@@ -1,6 +1,7 @@
 import React, { useContext , useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import { useState } from "react";
+import PayPalButton from "./PayPalButton";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -87,11 +88,45 @@ function DrAppoint() {
             </div>
 
             <div className="flex flex-col justify-center gap-2 mt-4 sm:mt-0">
-              {!item.cancel && (
-                <button className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md transition-all duration-300 cursor-pointer">
-                  Pay Here
-                </button>
-              ) }
+              {!item.cancel && !item.payment && (
+                <>
+                  <button
+                    className="px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-md transition-all duration-300 cursor-pointer"
+                    onClick={() => setAppointments(prev => prev.map((appt, idx) => idx === index ? { ...appt, showPayPal: true } : appt))}
+                  >
+                    Pay Here
+                  </button>
+                  {item.showPayPal && (
+                    <div className="mt-2">
+                      <PayPalButton
+                        amount={item.docData.fees}
+                        clientId={import.meta.env.VITE_REACT_APP_PAYPAL_CLIENT_ID || import.meta.env.REACT_APP_PAYPAL_CLIENT_ID || "AY1lMX0A6TrxMraoWCKaaFW7NCxTQJ0W-BSYBDCIcAPBMIl4pX7Wc18dLr8EH_04XbS3VBia_2ginmfa"}
+                        appointmentId={item._id}
+                        backendUrl={backendUrl}
+                        token={token}
+                        onSuccess={async (details) => {
+                          try {
+                            await axios.post(backendUrl + '/api/user/markPaid', { appointmentId: item._id }, { headers: { token } });
+                            setAppointments(prev => prev.map((appt, idx) => idx === index ? { ...appt, payment: true, showPayPal: false } : appt));
+                            toast.success('Payment successful!');
+                          } catch (err) {
+                            toast.error('Payment update failed!');
+                          }
+                        }}
+                      />
+                      <button
+                        className="ml-2 px-2 py-1 text-xs bg-gray-300 rounded"
+                        onClick={() => setAppointments(prev => prev.map((appt, idx) => idx === index ? { ...appt, showPayPal: false } : appt))}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+              {item.payment && (
+                <span className="px-4 py-2 text-sm font-medium text-green-700 bg-green-100 rounded-md">Paid</span>
+              )}
               {!item.cancel && (
                 <button
                   onClick={() => cancelAppointment(item._id)}

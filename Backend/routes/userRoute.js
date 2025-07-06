@@ -1,5 +1,6 @@
 import express from 'express';
 import { registerUser , loginUser, getUserProfile, updateUserProfile, bookAppointment, listAppointment, cancelAppointment } from '../controllers/userController.js';
+import { verifyPayPalPayment } from '../controllers/paypalController.js';
 import authUser from '../middleware/authUser.js';
 import upload from '../middleware/multer.js';
 const userRouter = express.Router();
@@ -10,4 +11,5 @@ userRouter.post('/updateprofile', upload.single('image'), authUser, updateUserPr
 userRouter.post('/bookappointment', authUser, bookAppointment)
 userRouter.get('/appointments', authUser, listAppointment)
 userRouter.post('/cancelappointment',authUser,cancelAppointment)
+userRouter.post('/verify-paypal-payment', verifyPayPalPayment)
 export default  userRouter
