@@ -1,20 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./GeminiChatbot.css";
+import { useChatbot } from "./ChatbotContext";
 
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
 const GeminiChatbot = () => {
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi! I am Gemini 2.0 Flash. How can I help you today?" }
+    { role: "assistant", content: "Hi! I am the MediLink Plus Chatbot. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
   const [listening, setListening] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const recognitionRef = useRef(null);
   const chatEndRef = useRef(null);
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+  // Use chatbot context for open/setOpen
+  const { open, setOpen } = useChatbot();
 
   // Voice-to-text logic
   useEffect(() => {
@@ -121,11 +124,11 @@ const GeminiChatbot = () => {
       {!open && (
         <button
           className="gemini-chatbot-toggle"
-          aria-label="Open Gemini Chatbot"
+          aria-label="Open MediLink Plus Chatbot"
           onClick={() => setOpen(true)}
           style={{ background: '#1c7856', color: '#fff' }}
         >
-          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot Icon" style={{ width: 32, height: 32 }} />
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="MediLink Plus Chatbot Icon" style={{ width: 32, height: 32 }} />
         </button>
       )}
       <div
@@ -160,8 +163,8 @@ const GeminiChatbot = () => {
           </select>
         </div>
         <div className="chat-header" style={{background: "#1c7856", color: "#fff"}}>
-          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Chatbot Icon" className="gemini-logo" />
-          Gemini 2.0 Flash
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="MediLink Plus Chatbot Icon" className="gemini-logo" />
+          MediLink Plus Chatbot
           <button
             className="chat-close"
             aria-label="Close"

@@ -18,10 +18,11 @@ import CookiePolicy from './pages/Legal/CookiePolicy';
 import { ToastContainer, toast } from "react-toastify";
 import Login from './components/Login';
 import GeminiChatbot from './components/GeminiChatbot';
+import { ChatbotProvider } from './components/ChatbotContext';
 
 function App() {
   return (
-    <>
+    <ChatbotProvider>
       {/* <Home />
       <AboutUs/> */}
       <ThemeToggle />
@@ -44,7 +45,7 @@ function App() {
         <Route path='/legal/cookie-policy' element={<CookiePolicy />} />
       </Routes> 
       <GeminiChatbot />
-    </>
+    </ChatbotProvider>
   );
 }
 
