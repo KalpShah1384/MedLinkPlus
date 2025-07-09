@@ -7,7 +7,16 @@ const AppContextProvider = (props) => {
     const currencySymbol = "₹";
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [doctors, setDoctors] = useState([])
-    const[token,setToken] = useState(localStorage.getItem("token")?localStorage.getItem("token"):false)
+    const [token, _setToken] = useState(() => localStorage.getItem("token") || false);
+const setToken = (newToken) => {
+  if (newToken) {
+    localStorage.setItem("token", newToken);
+    _setToken(newToken);
+  } else {
+    localStorage.removeItem("token");
+    _setToken(false);
+  }
+};
     const[userData,setuserData] = useState(false)
     const [theme, setTheme] = useState(() => {
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -64,13 +73,25 @@ const AppContextProvider = (props) => {
     useEffect(() => {
         getDoctorsdata()
     },[])
+    // On mount, check if token in localStorage and set it if needed
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        if (storedToken && !token) {
+            _setToken(storedToken);
+        }
+        // If no token, clear userData
+        if (!storedToken) {
+            setuserData(false);
+        }
+    }, []);
+
     useEffect(() => {
         if (token) {
-            loadUserProfileData()
+            loadUserProfileData();
         } else {
-            setuserData(false)
+            setuserData(false);
         }
-    },[token])
+    }, [token]);
     return (
         <AppContext.Provider value={value}>
             {props.children}

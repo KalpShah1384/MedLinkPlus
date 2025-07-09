@@ -19,6 +19,7 @@ connectCloudinary();
 //middleware 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 //api endpoints
 app.use('/api/admin', adminrouter);

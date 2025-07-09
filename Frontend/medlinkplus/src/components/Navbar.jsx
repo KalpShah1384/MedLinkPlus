@@ -190,6 +190,15 @@ function Navbar() {
                       My Appointments
                     </p>
                     <p
+                      className="cursor-pointer hover:text-blue-600"
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setShowMenu(false);
+                      }}
+                    >
+                      Dashboard
+                    </p>
+                    <p
                       className="cursor-pointer hover:text-red-500"
                       onClick={() => {
                         logout();

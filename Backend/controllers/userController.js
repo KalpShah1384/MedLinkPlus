@@ -6,6 +6,35 @@ import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointment.js";
 import razorpay from "razorpay";
+import MedicalRecord from "../models/medicalRecordModel.js";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Multer storage for medical records (local disk)
+const medicalRecordStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join("uploads", "medical-records");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+export const uploadMedicalRecordMulter = multer({ storage: medicalRecordStorage });
+
+// POST /api/user/upload-medical-record
+
+// GET /api/user/medical-records
+export const getMedicalRecords = async (req, res) => {
+  try {
+    const records = await MedicalRecord.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.json({ success: true, records });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 // ================= Register User ===================
 const registerUser = async (req, res) => {
   try {
@@ -247,4 +276,5 @@ const cancelAppointment = async (req, res) => {
 
 // }
 
-export { registerUser, loginUser, getUserProfile, updateUserProfile , bookAppointment , listAppointment,cancelAppointment};
+export { registerUser, loginUser, getUserProfile, updateUserProfile , bookAppointment , listAppointment, cancelAppointment };
+
