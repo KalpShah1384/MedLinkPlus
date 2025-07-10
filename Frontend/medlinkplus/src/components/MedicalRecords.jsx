@@ -88,6 +88,39 @@ const MedicalRecords = () => {
       >
         View / Download
       </a>
+      <div className="mt-2 flex gap-2">
+        <button
+          className="text-red-600 border border-red-600 rounded px-2 py-1 hover:bg-red-50"
+          onClick={async () => {
+            if (!window.confirm('Are you sure you want to delete this record?')) return;
+            try {
+              await axios.delete(`${backendUrl}/api/user/medical-records/${rec._id}`, { headers: { token } });
+              setRecords((prev) => prev.filter((r) => r._id !== rec._id));
+            } catch (e) {
+              alert('Failed to delete record.');
+            }
+          }}
+        >
+          Delete
+        </button>
+        <button
+          className="text-green-700 border border-green-700 rounded px-2 py-1 hover:bg-green-50"
+          onClick={async () => {
+            const newName = window.prompt('Enter new filename:', rec.filename);
+            if (!newName || newName === rec.filename) return;
+            try {
+              const { data } = await axios.put(`${backendUrl}/api/user/medical-records/${rec._id}`, { filename: newName }, { headers: { token } });
+              if (data.success) {
+                setRecords((prev) => prev.map((r) => r._id === rec._id ? { ...r, filename: newName } : r));
+              }
+            } catch (e) {
+              alert('Failed to rename record.');
+            }
+          }}
+        >
+          Rename
+        </button>
+      </div>
     </div>
   </div>
 ))}

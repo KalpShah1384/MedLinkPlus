@@ -20,12 +20,17 @@ import Login from './components/Login';
 import GeminiChatbot from './components/GeminiChatbot';
 import { ChatbotProvider } from './components/ChatbotContext';
 import UserDashboard from './components/UserDashboard';
+import Support from './components/Support';
+import { Link } from 'react-router-dom';
 
 function App() {
   return (
     <ChatbotProvider>
-      {/* <Home />
-      <AboutUs/> */}
+      {/* Simple navigation bar for Support */}
+      <nav className="w-full bg-gray-100 py-2 px-4 flex gap-4">
+        <Link to="/" className="text-[#1c7856] font-bold">Home</Link>
+        <Link to="/support" className="text-[#1c7856] font-bold">Support</Link>
+      </nav>
 
       <ToastContainer/>
       <Routes>
@@ -45,6 +50,7 @@ function App() {
         <Route path='/legal/privacy-policy' element={<PrivacyPolicy />} />
         <Route path='/legal/cookie-policy' element={<CookiePolicy />} />
         <Route path='/dashboard' element={<UserDashboard />} />
+        <Route path='/support' element={<Support />} />
       </Routes> 
       <GeminiChatbot />
     </ChatbotProvider>

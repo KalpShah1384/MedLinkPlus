@@ -20,12 +20,18 @@ const UserDashboard = () => {
       <p className="mb-2">Welcome, <span className="font-semibold">{userData.name}</span>!</p>
       <p className="mb-2">Email: {userData.email}</p>
       {/* Add more user-specific controls/info here */}
-      <div className="mt-6 mb-8">
+      <div className="mt-6 mb-2">
         <button
-          className="bg-[#1c7856] text-white px-4 py-2 rounded hover:bg-[#14543d]"
+          className="bg-[#1c7856] text-white px-4 py-2 rounded hover:bg-[#14543d] mr-2"
           onClick={() => navigate("/myprofile")}
         >
           View/Edit Profile
+        </button>
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          onClick={() => navigate("/support")}
+        >
+          Support
         </button>
       </div>
       <DashboardAppointments />
