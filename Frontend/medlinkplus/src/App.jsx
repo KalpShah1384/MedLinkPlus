@@ -10,6 +10,7 @@ import ConsultDoc from './Consultdr/ConsultDoc';
 import Appointmentid from './appointment/Appointmentid';
 import Profile from './Profile/Profile';
 import UserAppoint from './Myappoint/UserAppoint';
+import HealthAnalytics from './components/HealthAnalytics';
 
 import TermsOfUse from './pages/Legal/TermsOfUse';
 import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
@@ -17,6 +18,7 @@ import CookiePolicy from './pages/Legal/CookiePolicy';
 
 import { ToastContainer, toast } from "react-toastify";
 import Login from './components/Login';
+import Messages from './components/Messages';
 import GeminiChatbot from './components/GeminiChatbot';
 import { ChatbotProvider } from './components/ChatbotContext';
 import UserDashboard from './components/UserDashboard';
@@ -46,6 +48,8 @@ function App() {
         <Route path='/appointments/:docId' element={<Appointmentid />} />
         <Route path='/myprofile' element={<Profile />} />
         <Route path='/userappoint' element={<UserAppoint/>}/>
+        <Route path='/health-analytics' element={<HealthAnalytics />} />
+        <Route path='/messages' element={<Messages />} />
         <Route path='/legal/terms-of-use' element={<TermsOfUse />} />
         <Route path='/legal/privacy-policy' element={<PrivacyPolicy />} />
         <Route path='/legal/cookie-policy' element={<CookiePolicy />} />
