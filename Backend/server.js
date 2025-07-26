@@ -11,6 +11,7 @@ import getInTouchRouter from './routes/getintouch.js';
 import supportRouter from './routes/supportRoute.js';
 import healthAnalyticsRouter from './routes/healthAnalyticsRoute.js';
 import messageRoute from './routes/messageRoute.js';
+import medicineRoutes from './routes/medicineRoutes.js';
 
 //app configuration
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/getintouch', getInTouchRouter);
 app.use('/api/support', supportRouter);
 app.use('/api/health', healthAnalyticsRouter);
 app.use('/api/messages', messageRoute);
+app.use('/api/medicines', medicineRoutes);
 
 //localhost:4000/api/admin/add-doctor
 app.get('/', (req, res) => {

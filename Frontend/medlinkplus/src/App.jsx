@@ -21,13 +21,18 @@ import Login from './components/Login';
 import Messages from './components/Messages';
 import GeminiChatbot from './components/GeminiChatbot';
 import { ChatbotProvider } from './components/ChatbotContext';
+import { CartProvider } from './context/CartContext';
 import UserDashboard from './components/UserDashboard';
 import Support from './components/Support';
+import Medicines from './components/Medicines';
+import MedicineDetails from './components/MedicineDetails';
+import Cart from './components/Cart';
 import { Link } from 'react-router-dom';
 
 function App() {
   return (
     <ChatbotProvider>
+      <CartProvider>
       {/* Simple navigation bar for Support */}
       <nav className="w-full bg-gray-100 py-2 px-4 flex gap-4">
         <Link to="/" className="text-[#1c7856] font-bold">Home</Link>
@@ -55,8 +60,12 @@ function App() {
         <Route path='/legal/cookie-policy' element={<CookiePolicy />} />
         <Route path='/dashboard' element={<UserDashboard />} />
         <Route path='/support' element={<Support />} />
-      </Routes> 
+        <Route path='/medicines' element={<Medicines />} />
+        <Route path='/medicine/:id' element={<MedicineDetails />} />
+        <Route path='/cart' element={<Cart />} />
+      </Routes>
       <GeminiChatbot />
+      </CartProvider>
     </ChatbotProvider>
   );
 }

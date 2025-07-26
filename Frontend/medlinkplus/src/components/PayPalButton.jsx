@@ -1,7 +1,16 @@
 import React, { useEffect } from "react";
-
 import axios from "axios";
-const PayPalButton = ({ amount, onSuccess, currency = "USD", clientId, appointmentId, backendUrl, token }) => {
+
+const PayPalButton = ({ 
+  amount, 
+  onSuccess, 
+  currency = "USD", 
+  clientId, 
+  appointmentId, 
+  cartItems, 
+  backendUrl, 
+  token 
+}) => {
   useEffect(() => {
     // Dynamically load PayPal SDK script if not already loaded
     const scriptId = "paypal-sdk";
@@ -27,17 +36,31 @@ const PayPalButton = ({ amount, onSuccess, currency = "USD", clientId, appointme
           const details = await actions.order.capture();
           // Backend verification
           try {
+            const payload = { 
+              orderID: data.orderID,
+              amount,
+              currency
+            };
+            
+            if (appointmentId) {
+              payload.appointmentId = appointmentId;
+            } else if (cartItems) {
+              payload.cartItems = cartItems;
+            }
+            
             const verifyRes = await axios.post(
               `${backendUrl}/api/user/verify-paypal-payment`,
-              { orderID: data.orderID, appointmentId },
+              payload,
               { headers: { token } }
             );
+            
             if (verifyRes.data && verifyRes.data.success) {
               onSuccess(details);
             } else {
               alert("Payment verification failed: " + (verifyRes.data?.message || "Unknown error"));
             }
           } catch (err) {
+            console.error('Payment verification error:', err);
             alert("Payment verification error: " + (err.response?.data?.message || err.message));
           }
         },
