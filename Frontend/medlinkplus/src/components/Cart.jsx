@@ -23,17 +23,68 @@ const Cart = () => {
 
   const handlePaymentSuccess = async (details) => {
     try {
-      // Here you would typically send the order to your backend
-      // await axios.post(`${backendUrl}/api/orders`, { items: cart, total: cartTotal }, { 
-      //   headers: { 'Authorization': `Bearer ${token}` } 
-      // });
+      // Create order in backend
+      const orderData = {
+        items: cart.map(item => ({
+          medicineId: item._id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image
+        })),
+        totalAmount: cartTotal,
+        paymentMethod: 'paypal',
+        paymentId: details.id,
+        shippingAddress: {
+          // Add shipping address from user profile or form
+          address: 'User Address', // Replace with actual address
+          city: 'User City',
+          state: 'User State',
+          postalCode: '123456',
+          country: 'User Country'
+        }
+      };
+
+      // Create order
+      const orderResponse = await fetch(`${backendUrl}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create order');
+      }
+
+      const orderResult = await orderResponse.json();
+      
+      // Update payment status
+      await fetch(`${backendUrl}/api/orders/update-payment-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          orderId: orderResult.orderId,
+          paymentId: details.id,
+          status: 'completed'
+        })
+      });
       
       toast.success('Payment successful! Your order has been placed.');
       clearCart();
       setShowPayPal(false);
+      
+      // Optionally navigate to order confirmation page
+      // navigate('/order-confirmation', { state: { orderId: orderResult.orderId } });
+      
     } catch (error) {
-      console.error('Error placing order:', error);
-      toast.error('Failed to place order. Please try again.');
+      console.error('Error processing order:', error);
+      toast.error('Failed to process order. Please contact support.');
     }
   };
 
@@ -77,16 +128,26 @@ const Cart = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="divide-y divide-gray-200">
           {cart.map((item) => (
-            <div key={item._id} className="p-4 flex items-center">
-              <div className="flex-shrink-0 h-20 w-20 bg-gray-200 rounded-md flex items-center justify-center">
-                <span className="text-gray-400 text-xs">No Image</span>
+            <div key={item._id} className="p-4 flex items-center border-b border-gray-100">
+              <div className="flex-shrink-0 h-24 w-24 bg-white border border-gray-200 rounded-md flex items-center justify-center overflow-hidden">
+                {item.image ? (
+                  <img src={item.image} alt={item.name} className="h-full w-full object-contain p-2" />
+                ) : (
+                  <span className="text-gray-400 text-xs p-2 text-center">No Image</span>
+                )}
               </div>
               
-              <div className="ml-4 flex-1">
-                <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
-                <p className="text-sm text-gray-500">{item.brand || item.company}</p>
-                <p className="text-sm font-medium text-[#1c7856] mt-1">
-                  ₹{item.price}
+              <div className="ml-4 flex-1 min-w-0">
+                <h3 className="text-base font-semibold text-gray-900 truncate">{item.name}</h3>
+                {item.brand && <p className="text-sm text-gray-600">{item.brand}</p>}
+                {item.company && item.company !== item.brand && (
+                  <p className="text-sm text-gray-500">{item.company}</p>
+                )}
+                <p className="text-base font-semibold text-[#1c7856] mt-1">
+                  ₹{(() => {
+                    const price = parseFloat(item.price);
+                    return isNaN(price) ? '0.00' : price.toFixed(2);
+                  })()}
                 </p>
               </div>
               
@@ -127,16 +188,32 @@ const Cart = () => {
           ))}
         </div>
         
-        <div className="p-4 bg-gray-50 border-t border-gray-200">
-          <div className="flex justify-between text-lg font-medium text-gray-900 mb-4">
-            <span>Total</span>
-            <span>₹{cartTotal.toFixed(2)}</span>
+        <div className="p-6 bg-gray-50 border-t border-gray-200">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Order Summary</h3>
+            <span className="text-sm text-gray-500">{cart.length} {cart.length === 1 ? 'item' : 'items'}</span>
           </div>
           
-          <div className="flex justify-between">
+          <div className="space-y-3 mb-6">
+            <div className="flex justify-between text-base">
+              <span className="text-gray-600">Subtotal</span>
+              <span className="font-medium">₹{(isNaN(cartTotal) ? 0 : cartTotal).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-base">
+              <span className="text-gray-600">Shipping</span>
+              <span className="font-medium">Free</span>
+            </div>
+            <div className="border-t border-gray-200 my-2"></div>
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Total</span>
+              <span className="text-[#1c7856]">₹{cartTotal.toFixed(2)}</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-between">
             <button
               onClick={() => navigate('/medicines')}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1c7856]"
+              className="px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1c7856] transition-colors"
             >
               Continue Shopping
             </button>
@@ -144,7 +221,7 @@ const Cart = () => {
             {!showPayPal ? (
               <button
                 onClick={handleProceedToCheckout}
-                className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1c7856] hover:bg-[#156349] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1c7856]"
+                className="px-8 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-[#1c7856] hover:bg-[#156349] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1c7856] transition-colors"
               >
                 Proceed to Checkout
               </button>

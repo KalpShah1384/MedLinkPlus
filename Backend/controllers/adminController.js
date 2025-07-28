@@ -6,6 +6,7 @@ import doctorModel from "../models/doctorModel.js";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointment.js";
 import userModel from "../models/userModel.js";
+import Order from "../models/orderModel.js";
 
 const addDoctor = async (req, res) => {
   try {
@@ -201,4 +202,11 @@ const adminDashboard = async (req, res) => {
   }
 }
 
-export { addDoctor, loginAdmin , allDoctors,appointmentsAdmin, appointmentCancel , adminDashboard };
+export { 
+  addDoctor, 
+  loginAdmin, 
+  allDoctors, 
+  appointmentsAdmin, 
+  appointmentCancel, 
+  adminDashboard
+};

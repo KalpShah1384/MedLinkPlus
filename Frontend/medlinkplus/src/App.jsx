@@ -23,6 +23,7 @@ import GeminiChatbot from './components/GeminiChatbot';
 import { ChatbotProvider } from './components/ChatbotContext';
 import { CartProvider } from './context/CartContext';
 import UserDashboard from './components/UserDashboard';
+import AdminDashboard from './components/AdminDashboard';
 import Support from './components/Support';
 import Medicines from './components/Medicines';
 import MedicineDetails from './components/MedicineDetails';
@@ -61,8 +62,11 @@ function App() {
         <Route path='/dashboard' element={<UserDashboard />} />
         <Route path='/support' element={<Support />} />
         <Route path='/medicines' element={<Medicines />} />
-        <Route path='/medicine/:id' element={<MedicineDetails />} />
-        <Route path='/cart' element={<Cart />} />
+        <Route path="/medicines/:id" element={<MedicineDetails />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/medicine-orders" element={<AdminDashboard />} />
+        <Route path="*" element={<h1>404 Not Found</h1>} />     
       </Routes>
       <GeminiChatbot />
       </CartProvider>

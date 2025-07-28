@@ -57,10 +57,39 @@ export const CartProvider = ({ children }) => {
     setCart([]);
   };
 
-  const cartTotal = cart.reduce(
-    (total, item) => total + (parseFloat(item.price.replace(/[^0-9.]/g, '')) * item.quantity),
-    0
-  );
+  const cartTotal = cart.reduce((total, item) => {
+    console.log('Processing item:', {
+      itemId: item._id,
+      price: item.price,
+      type: typeof item.price,
+      quantity: item.quantity
+    });
+    
+    // Handle different price formats (string with currency symbol, number, etc.)
+    let price = item.price;
+    if (price === undefined || price === null) {
+      console.error('Price is undefined or null for item:', item);
+      return total;
+    }
+    
+    if (typeof price === 'string') {
+      // Remove any non-numeric characters except decimal point and minus sign
+      price = price.replace(/[^0-9.-]/g, '');
+    }
+    
+    // Convert to number and ensure it's a valid number
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice)) {
+      console.error('Failed to parse price for item:', item, 'Parsed value:', price);
+      return total;
+    }
+    
+    const itemTotal = numericPrice * (item.quantity || 1);
+    console.log('Item total:', itemTotal);
+    return total + itemTotal;
+  }, 0);
+  
+  console.log('Final cart total:', cartTotal);
 
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
