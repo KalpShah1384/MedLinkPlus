@@ -15,8 +15,12 @@ import {
   cancelAppointment
 } from '../controllers/userController.js';
 import { verifyPayPalPayment } from '../controllers/paypalController.js';
+import { googleLogin } from '../controllers/googleAuthController.js';
 
 const userRouter = express.Router();
+
+// Google Auth
+userRouter.post('/google-login', googleLogin);
 
 // Multer memory storage for Cloudinary streaming upload
 const uploadMedicalRecordMulter = multer({ storage: multer.memoryStorage() });

@@ -1,10 +1,14 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 const Login = () => {
+  const googleButtonRef = useRef(null);
+
   const { backendUrl, setToken } = useContext(AppContext);
   const [state, setState] = useState("Login"); // or 'Sign Up'
   const [email, setEmail] = useState("");
@@ -12,6 +16,41 @@ const Login = () => {
   const [name, setName] = useState("");
 
   const navigate = useNavigate()
+
+  // Google One Tap/Sign-In logic
+  useEffect(() => {
+    if (window.google && googleButtonRef.current && GOOGLE_CLIENT_ID) {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        width: '100%',
+      });
+    }
+  }, []);
+
+  const handleGoogleResponse = async (response) => {
+    try {
+      const { credential } = response;
+      if (!credential) return toast.error('Google login failed');
+      if (!backendUrl) return toast.error('Backend URL not configured');
+      const { data } = await axios.post(`${backendUrl}/api/user/google-login`, { token: credential });
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        toast.success("Logged in with Google!");
+        navigate("/");
+      } else {
+        toast.error(data.message || "Google login failed");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    }
+  };
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
@@ -112,6 +151,11 @@ const Login = () => {
         >
           {state === "Sign Up" ? "Sign Up" : "Login"}
         </button>
+
+        <div className="w-full flex flex-col items-center gap-2 mt-2">
+          <div ref={googleButtonRef} className="w-full flex justify-center"></div>
+          <p className="text-xs text-zinc-400">or</p>
+        </div>
 
         {state === "Sign Up" ? (
           <p>
