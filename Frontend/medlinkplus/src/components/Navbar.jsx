@@ -12,12 +12,14 @@ function Navbar() {
   const dropdownRef = useRef(null);
 
   const { token, setToken, userData } = useContext(AppContext);
-  const { cartItemCount } = useCart();
+  const { cartItemCount, clearCart } = useCart();
   const navigate = useNavigate();
 
   const logout = () => {
     setToken(false);
     localStorage.removeItem("token");
+    clearCart();
+    navigate("/");
   };
 
   useEffect(() => {

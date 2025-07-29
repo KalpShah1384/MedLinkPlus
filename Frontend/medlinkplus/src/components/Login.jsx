@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext.jsx";
+import { useCart } from "../context/CartContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ const Login = () => {
   const googleButtonRef = useRef(null);
 
   const { backendUrl, setToken } = useContext(AppContext);
+  const { clearCart } = useCart();
   const [state, setState] = useState("Login"); // or 'Sign Up'
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,6 +43,7 @@ const Login = () => {
       if (data.success) {
         localStorage.setItem("token", data.token);
         setToken(data.token);
+        clearCart(); // Always start with a new cart on login
         toast.success("Logged in with Google!");
         navigate("/");
       } else {
@@ -70,6 +73,7 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
+          clearCart(); // Always start with a new cart on login
           toast.success("Logged in successfully!");
           navigate("/");
         } else {
@@ -86,6 +90,7 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
+          clearCart(); // Always start with a new cart on sign up
           toast.success("Account created successfully!");
         } else {
           toast.error(data.message || "Sign up failed");

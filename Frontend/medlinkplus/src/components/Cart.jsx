@@ -12,6 +12,15 @@ const Cart = () => {
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL || 'http://localhost:4000';
 
+  // Restrict cart access to logged-in users only
+  React.useEffect(() => {
+    if (!token) {
+      toast.info('Please login to access your cart');
+      navigate('/login', { state: { from: '/cart' } });
+    }
+  }, [token, navigate]);
+  if (!token) return null;
+
   const handleProceedToCheckout = () => {
     if (!token) {
       toast.info('Please login to proceed to checkout');
