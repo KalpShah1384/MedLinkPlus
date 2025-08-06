@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import medicineImg from '../assets/medicine.png';
 
 const statusColors = {
   processing: "bg-yellow-100 text-yellow-800",
@@ -96,7 +97,7 @@ const MedicineDeliveryList = () => {
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-2xl shadow-lg p-8 mt-10 max-w-7xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <img src="/medicine.png" alt="Logo" className="w-10 h-10 rounded-full border border-[#1c7856] bg-[#f6fffa]" />
+        <img src={medicineImg} alt="Logo" className="w-10 h-10 rounded-full border border-[#1c7856] bg-[#f6fffa]" />
         <h2 className="text-2xl font-extrabold text-[#1c7856] tracking-tight">Medicine Deliveries</h2>
       </div>
       <div className="mb-6 flex gap-2 flex-wrap">

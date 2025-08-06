@@ -4,6 +4,7 @@ import { AdminContext } from '../context/AdminContext'
 import { NavLink } from 'react-router-dom'
 import { assets} from '../assets/assets_admin/assets'
 import { DoctorContext } from '../context/DoctorContext'
+import medicineImg from '../assets/medicine.png';
 
 const Sidebar = () => {
     const { AdminToken } = useContext(AdminContext)
@@ -64,7 +65,7 @@ const Sidebar = () => {
             }
             to={"medicine-delivery"}
           >
-            <img src="/medicine.png" alt="Medicine Delivery" className="w-6 h-6" />
+            <img src={medicineImg} alt="Medicine Delivery" className="w-6 h-6" />
             <p>Medicine Delivery</p>
           </NavLink>
         </ul>

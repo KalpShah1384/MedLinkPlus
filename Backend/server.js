@@ -39,8 +39,23 @@ app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
 
 //localhost:4000/api/admin/add-doctor
-app.get('/', (req, res) => {
-    res.send('Welcome to the backend server!');
+// Removed root route so static serving works for frontend
+
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use('/', express.static(path.join(__dirname, 'frontend_dist')));
+app.use('/admin', express.static(path.join(__dirname, 'admin_dist')));
+
+// Fallback for React Router (admin and user)
+app.get('/admin/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin_dist', 'index.html'));
+});
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend_dist', 'index.html'));
 });
 
 //start the server

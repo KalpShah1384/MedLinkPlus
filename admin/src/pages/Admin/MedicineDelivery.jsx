@@ -1,5 +1,6 @@
 import React from "react";
 import MedicineDeliveryList from "../../components/MedicineDeliveryList";
+import medicineImg from '../../assets/medicine.png';
 
 const MedicineDelivery = () => {
   return (
