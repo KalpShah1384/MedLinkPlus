@@ -1,43 +1,72 @@
-# MedLinkPlus
+# MedLinkPlus: Full-Stack Healthcare Application
 
-MedLinkPlus is an innovative healthcare technology platform designed to revolutionize healthcare services in India. Our platform integrates various healthcare services including AI chat, booking systems, medicine delivery, video consultancies, and insurance integration.
+MedLinkPlus is a comprehensive healthcare platform designed to connect patients, doctors, and administrators. It features a user-friendly interface for patients to book appointments and consult with doctors, an administrative dashboard for management, and a robust backend to handle the application's logic and data.
 
-## Features
+## Project Structure
 
-| Feature | Description |
-|---------|-------------|
-| AI Chat | An intelligent chatbot to assist users with their healthcare queries. |
-| Booking System | A seamless system for booking appointments with healthcare providers. |
-| Medicine Delivery | Fast and reliable delivery of medicines to your doorstep. |
-| Video Consultancies | Virtual consultations with healthcare professionals. |
-| Insurance Integration | Easy integration with various insurance providers for hassle-free claims. |
+The project is organized into three main parts: a React-based frontend for users, a separate React-based admin panel, and a Node.js/Express backend.
 
-## Technologies Used
+```
+MedlinkPlus/
+├── Backend/             # Node.js/Express API
+├── Frontend/medlinkplus/  # React User-Facing App (Vite)
+├── admin/               # React Admin Panel (Vite)
+├── assets/              # Shared static assets
+├── Pharmacist.Medicines.json # Medicine data
+└── Updated_Medicines.json  # Updated medicine data
+```
 
-| Technology | Description |
-|------------|-------------|
-| React | A JavaScript library for building user interfaces. |
-| JavaScript | The programming language used for client-side logic. |
-| Express | A minimal and flexible Node.js web application framework. |
-| Node.js | A JavaScript runtime built on Chrome's V8 JavaScript engine. |
-| MongoDB | A NoSQL database used for storing application data. |
+### Backend (`/Backend`)
 
-## Installation
+The backend is built with Node.js and Express, using MongoDB as the database. It handles all business logic, API endpoints, and data management.
 
-To get started with MedLinkPlus, follow these steps:
+- **`server.js`**: The main entry point for the backend server.
+- **`config/`**: Contains database connection and other configuration files.
+- **`controllers/`**: Holds the business logic for different parts of the application (e.g., user authentication, appointment handling).
+- **`middleware/`**: Includes custom middleware for tasks like authentication (`auth.js`, `authD.js`) and error handling.
+- **`models/`**: Defines the Mongoose schemas for the MongoDB database (e.g., `userModel.js`, `doctorModel.js`, `orderModel.js`).
+- **`routes/`**: Contains the API route definitions that link endpoints to controller logic.
+- **`scripts/`**: Utility scripts, potentially for database seeding or other tasks.
 
-1. **Clone the repository:**
-   git clone https://github.com/KalpShah1384/MedLinkPlus.git
-2. **Navigate to the project directory:**
-  cd MedLinkPlus
-3. **Install the dependencies:**
-  npm install
-4. **Set up your environment variables:**
-  Create .env file n last start with npm start 
+### Frontend (`/Frontend/medlinkplus`)
 
-If you have any questions or suggestions, feel free to reach out to us at 
-medlinkplus@gmail.com
+The main user-facing application is a single-page application built with React and Vite.
 
+- **`src/main.jsx`**: The entry point for the React application.
+- **`src/App.jsx`**: The root component of the application, which sets up routing.
+- **`src/components/`**: Contains reusable UI components used throughout the application.
+- **`src/pages/`**: Includes components that represent full pages (e.g., Home, Login, Profile).
+- **`src/context/`**: Holds React Context providers for state management (e.g., `CartContext`).
 
-You can customize this `README.md` file further based on your specific requirements and additional details about your project.
- 
+### Admin Panel (`/admin`)
+
+The admin panel is a separate React application, also built with Vite, for administrative tasks.
+
+- **`src/App.jsx`**: The root component for the admin panel.
+- **`src/pages/`**: Contains pages specific to administrative functions (e.g., user management, doctor approvals).
+- **`src/components/`**: UI components specific to the admin panel.
+
+## Getting Started
+
+To run this project locally, you will need to run the backend server and the frontend applications separately.
+
+**1. Run the Backend:**
+```bash
+cd Backend
+npm install
+npm start
+```
+
+**2. Run the Frontend:**
+```bash
+cd Frontend/medlinkplus
+npm install
+npm run dev
+```
+
+**3. Run the Admin Panel:**
+```bash
+cd admin
+npm install
+npm run dev
+```

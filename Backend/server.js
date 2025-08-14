@@ -37,6 +37,8 @@ app.use('/api/health', healthAnalyticsRouter);
 app.use('/api/messages', messageRoute);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
+import symptomCheckerRoute from './routes/symptomCheckerRoute.js';
+app.use('/api/symptom-checker', symptomCheckerRoute);
 
 //localhost:4000/api/admin/add-doctor
 // Removed root route so static serving works for frontend

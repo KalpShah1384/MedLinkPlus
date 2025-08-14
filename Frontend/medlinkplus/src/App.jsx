@@ -20,6 +20,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Login from './components/Login';
 import Messages from './components/Messages';
 import GeminiChatbot from './components/GeminiChatbot';
+import ImageSymptomChecker from './components/ImageSymptomChecker';
 import { ChatbotProvider } from './components/ChatbotContext';
 import { CartProvider } from './context/CartContext';
 import UserDashboard from './components/UserDashboard';
@@ -68,6 +69,7 @@ function App() {
         <Route path="/medicine-orders" element={<AdminDashboard />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />     
       </Routes>
+      <ImageSymptomChecker />
       <GeminiChatbot />
       </CartProvider>
     </ChatbotProvider>

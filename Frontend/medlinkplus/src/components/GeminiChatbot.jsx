@@ -3,6 +3,7 @@ import "./GeminiChatbot.css";
 import { useChatbot } from "./ChatbotContext";
 
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+const SYMPTOM_CHECKER_API_URL = "http://localhost:4000/api/symptom-checker";
 
 const GeminiChatbot = () => {
   const [messages, setMessages] = useState([
@@ -12,6 +13,7 @@ const GeminiChatbot = () => {
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [symptomMode, setSymptomMode] = useState(false);
   const recognitionRef = useRef(null);
   const chatEndRef = useRef(null);
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -58,10 +60,41 @@ const GeminiChatbot = () => {
     }
   }, [messages, open]);
 
+  // Helper: detect if input is likely a symptom description
+  const isSymptomInput = (text) => {
+    const symptomKeywords = [
+      'symptom', 'pain', 'ache', 'fever', 'cough', 'cold', 'nausea', 'vomit', 'headache', 'dizzy', 'fatigue', 'weakness', 'swelling', 'rash', 'itch', 'cramp', 'constipation', 'diarrhea', 'injury', 'infection', 'bleeding', 'burn', 'cut', 'wound', 'fracture', 'sprain', 'sore', 'throat', 'stomach', 'chest', 'back', 'leg', 'arm', 'eye', 'ear', 'tooth', 'teeth', 'gum', 'foot', 'hand', 'joint', 'muscle', 'bone', 'vomiting', 'appetite', 'weight', 'sleep', 'insomnia', 'anxiety', 'depression', 'allergy', 'asthma', 'diabetes', 'pressure', 'heart', 'lung', 'kidney', 'liver', 'thyroid', 'period', 'pregnancy', 'child', 'baby', 'elderly', 'senior', 'adult', 'teen', 'puberty', 'growth', 'wellness', 'consult', 'doctor', 'medicine', 'treatment', 'remedy', 'issue', 'problem', 'emergency', 'urgent', 'consultation', 'checkup', 'diagnosis', 'prescription', 'therapy', 'mental', 'stress', 'burning', 'itching', 'migraine', 'dizzy', 'vomit', 'nausea', 'chills', 'sweat', 'shiver', 'runny nose', 'blocked nose', 'sneeze', 'flu', 'infection', 'injury', 'fracture', 'bruise', 'sprain', 'cut', 'wound', 'bleed', 'burn', 'swelling', 'redness', 'pus', 'discharge', 'painful', 'hurts', 'hurting', 'sick', 'unwell', 'ill', 'problem', 'issue', 'concern', 'difficulty', 'discomfort', 'distress', 'trouble', 'complication', 'abnormal', 'change', 'symptoms', 'signs', 'feeling', 'experience', 'sensation'
+    ];
+    const lower = text.toLowerCase();
+    return symptomKeywords.some((kw) => lower.includes(kw));
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || !apiKey) return;
+    if (!input.trim()) return;
     const userMessage = { role: "user", content: input };
+    // If symptomMode is enabled or input looks like symptoms, use AI symptom checker
+    if (symptomMode || isSymptomInput(input)) {
+      setLoading(true);
+      try {
+        const res = await fetch(SYMPTOM_CHECKER_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ symptoms: input })
+        });
+        const data = await res.json();
+        if (data.success) {
+          setMessages((prev) => [...prev, userMessage, { role: 'assistant', content: data.result }]);
+        } else {
+          setMessages((prev) => [...prev, userMessage, { role: 'assistant', content: 'Sorry, I could not process your symptoms right now.' }]);
+        }
+      } catch (err) {
+        setMessages((prev) => [...prev, userMessage, { role: 'assistant', content: 'Sorry, there was an error connecting to the AI Symptom Checker.' }]);
+      }
+      setLoading(false);
+      setSymptomMode(false);
+      return;
+    }
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
 
@@ -136,7 +169,13 @@ const GeminiChatbot = () => {
         style={{
           background: "var(--card)",
           color: "var(--card-foreground)",
-          border: `1.5px solid var(--border)`
+          border: `1.5px solid var(--border)`,
+          width: 600,
+          minHeight: 700,
+          maxHeight: 900,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.18)',
+          borderRadius: 16,
+          zIndex: 1000
         }}
       >
         <div style={{padding: '12px 18px 0 18px', background: 'var(--card)'}}>
@@ -162,9 +201,17 @@ const GeminiChatbot = () => {
             <option value="other">Other</option>
           </select>
         </div>
-        <div className="chat-header" style={{background: "#1c7856", color: "#fff"}}>
+        <div className="chat-header" style={{background: "#1c7856", color: "#fff", display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap'}}>
           <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="MediLink Plus Chatbot Icon" className="gemini-logo" />
-          MediLink Plus Chatbot
+          <span style={{fontWeight: 600, fontSize: 18}}>MediLink Plus Chatbot</span>
+          <button
+            style={{ marginLeft: 8, background: symptomMode ? '#4caf50' : '#1976d2', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: 14 }}
+            onClick={() => setSymptomMode((v) => !v)}
+            type="button"
+            aria-pressed={symptomMode}
+          >
+            {symptomMode ? 'Symptom Checker: ON' : 'Use Symptom Checker'}
+          </button>
           <button
             className="chat-close"
             aria-label="Close"
@@ -172,7 +219,7 @@ const GeminiChatbot = () => {
             style={{marginLeft: "auto", background: "none", border: "none", color: "inherit", fontSize: 22, cursor: "pointer"}}
           >×</button>
         </div>
-        <div className="chat-body">
+        <div className="chat-body" style={{ maxHeight: 500, minHeight: 350, overflowY: 'auto', padding: '16px 24px', background: '#f8f9fa' }}>
           {messages.map((msg, i) => (
             <div key={i} className={`chat-message ${msg.role}`}>{msg.content}</div>
           ))}
