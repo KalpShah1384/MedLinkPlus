@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "postbuild":"copy public\\_redirects dist\\_redirects"
+    "postbuild":"cp public/_redirects dist/_redirects"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.15",
