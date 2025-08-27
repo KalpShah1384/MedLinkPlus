@@ -22,7 +22,20 @@ connectDB();
 connectCloudinary();
 
 //middleware 
-app.use(cors());
+const corsOptions = {
+    origin: [
+        process.env.FRONTEND_URL || 'http://localhost:5173',
+        process.env.ADMIN_URL || 'http://localhost:5174',
+        'https://wondrous-quokka-5bc2b7.netlify.app', // Your actual Netlify frontend URL
+        'https://localhost:3000',
+        'https://127.0.0.1:3000'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -40,24 +53,14 @@ app.use('/api/orders', orderRoutes);
 import symptomCheckerRoute from './routes/symptomCheckerRoute.js';
 app.use('/api/symptom-checker', symptomCheckerRoute);
 
-//localhost:4000/api/admin/add-doctor
-// Removed root route so static serving works for frontend
-
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app.use('/', express.static(path.join(__dirname, 'frontend_dist')));
-app.use('/admin', express.static(path.join(__dirname, 'admin_dist')));
-
-// Fallback for React Router (admin and user)
-app.get('/admin/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin_dist', 'index.html'));
+// Health check endpoint for deployment platforms
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend_dist', 'index.html'));
+
+// API root endpoint
+app.get('/api', (req, res) => {
+    res.status(200).json({ message: 'MedlinkPlus API is running' });
 });
 
 //start the server
