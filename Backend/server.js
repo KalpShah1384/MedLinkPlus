@@ -26,7 +26,7 @@ const corsOptions = {
     origin: [
         process.env.FRONTEND_URL || 'http://localhost:5173',
         process.env.ADMIN_URL || 'http://localhost:5174',
-        'https://wondrous-quokka-5bc2b7.netlify.app', // Your actual Netlify frontend URL
+        'https://medlinkplusadmin.netlify.app', // Your actual admin Netlify URL
         'https://localhost:3000',
         'https://127.0.0.1:3000'
     ],
@@ -52,6 +52,21 @@ app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
 import symptomCheckerRoute from './routes/symptomCheckerRoute.js';
 app.use('/api/symptom-checker', symptomCheckerRoute);
+
+// Root endpoint
+app.get('/', (req, res) => {
+    res.status(200).json({ 
+        message: 'MedlinkPlus Backend API is running',
+        version: '1.0.0',
+        endpoints: {
+            health: '/health',
+            api: '/api',
+            admin: '/api/admin',
+            doctor: '/api/doctor',
+            user: '/api/user'
+        }
+    });
+});
 
 // Health check endpoint for deployment platforms
 app.get('/health', (req, res) => {
