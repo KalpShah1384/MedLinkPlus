@@ -26,13 +26,15 @@ const corsOptions = {
     origin: [
         process.env.FRONTEND_URL || 'http://localhost:5173',
         process.env.ADMIN_URL || 'http://localhost:5174',
-        'https://medlinkplusadmin.netlify.app', // Your actual admin Netlify URL
+        'https://wondrous-quokka-5bc2b7.netlify.app',
+        'https://medlinkplusadmin.netlify.app',
         'https://localhost:3000',
         'https://127.0.0.1:3000'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'token']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token', 'atoken'],
+    optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));

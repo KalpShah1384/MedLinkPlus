@@ -10,7 +10,7 @@ const Cart = () => {
   const [showPayPal, setShowPayPal] = useState(false);
   const { token } = useContext(AppContext);
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_REACT_APP_BACKEND_URL || 'http://localhost:4000';
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
   // Restrict cart access to logged-in users only
   React.useEffect(() => {
