@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { AdminContext } from '../../context/AdminContext'
-import { AppContext } from '../../context/appContext'
+import { AppContext } from '../../context/AppContext'
 import { assets } from '../../assets/assets_admin/assets'
 import '../../styles/custom-scrollbar.css'
 

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
-import { AdminContext } from '../../context/adminContext';
-import { AppContext } from '../../context/appContext';
+import { AdminContext } from '../../context/AdminContext';
+import { AppContext } from '../../context/AppContext';
 
 const DebugAppointments = () => {
   const { appointments } = useContext(AdminContext);
